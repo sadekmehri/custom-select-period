@@ -1,74 +1,56 @@
-import { useState, type FC, ChangeEvent } from 'react'
-import {
-  CustomizedDateValue,
+import { useState, type FC } from 'react'
+import type {
+  DateRangePayloadFunction,
   DateSelection,
   DateUnitField,
-  DateUnitFunction,
   MainChoiceIndexes,
-  MainChoicesToIndexesMap,
   PeriodSpecification,
+  StringValuedKey,
+} from './components/CustomSelect/types'
+import DateUtils from './components/CustomSelect/utils/date'
+import YearMonthSelector from './components/CustomSelect/YearMonthSelector'
+import {
+  MainChoicesToIndexesMap,
   mainSelectOptions,
-  monthOptions,
-} from './types'
-import { getMonth, getYear } from 'date-fns'
-import DateUtils from './utils/date'
-import Select from './components/Select'
-import YearMonthSelector from './components/YearMonthSelector'
+  DEFAULT_MONTH,
+  DEFAULT_YEAR,
+  defaultDateValueExtractorsMap,
+} from './components/CustomSelect/DateSelectionConstants'
 
-function defaultCrtieriaValuesFactory(choice: MainChoiceIndexes) {
-  const defaultCrtieriaValues = {
+import SelectComponent from './components/CustomSelect/Select'
+
+function getDefaultCrtieriaValueFactory(choice: MainChoiceIndexes) {
+  const currentYear = DateUtils.getCurrentYear()
+
+  const defaultCrtieriaValues: Record<MainChoiceIndexes, DateRangePayloadFunction> = {
     '1': getDefaultCurrentYearPayload,
     '2': getDefaultPreviousYearPayload,
-    '3': getDefaultSelectYearPayload,
-    '4': getDefaultSelectPeriodPayload,
+    '3': getDefaultCurrentYearPayload,
+    '4': getDefaultCurrentYearPayload,
   }
 
   function getDefaultCurrentYearPayload() {
-    const currentDate = new Date()
-    const currentYear = getYear(currentDate)
-
     return {
-      id: '1',
-      value: currentYear,
+      from: {
+        year: currentYear,
+        month: 1,
+      },
+      to: {
+        year: currentYear,
+        month: 12,
+      },
     }
   }
 
   function getDefaultPreviousYearPayload() {
-    const currentDate = new Date()
-    const previousYear = getYear(currentDate) - 1
-
     return {
-      id: '2',
-      value: previousYear,
-    }
-  }
-
-  function getDefaultSelectYearPayload() {
-    const currentDate = new Date()
-    const currentYear = getYear(currentDate)
-
-    return {
-      id: '3',
-      value: currentYear,
-    }
-  }
-
-  function getDefaultSelectPeriodPayload() {
-    const currentDate = new Date()
-    const currentYear = getYear(currentDate)
-    const currentMonth = getMonth(currentDate) + 1
-
-    return {
-      id: '4',
-      value: {
-        from: {
-          year: currentYear,
-          month: 1,
-        },
-        to: {
-          year: currentYear,
-          month: currentMonth,
-        },
+      from: {
+        year: currentYear - 1,
+        month: 1,
+      },
+      to: {
+        year: currentYear - 1,
+        month: 12,
       },
     }
   }
@@ -76,86 +58,103 @@ function defaultCrtieriaValuesFactory(choice: MainChoiceIndexes) {
   return defaultCrtieriaValues[choice]
 }
 
-const dateValueExtractorsMap: Record<DateUnitField, DateUnitFunction> = {
-  month: DateUtils.getSelectedMonthOrDefault,
-  year: DateUtils.getSelectedYearOrDefault,
-}
-
 const App: FC = () => {
-  const [mainOption, setMainOption] = useState<MainChoiceIndexes>('1')
-  const [currentCriteria, setCurrentCriteria] = useState<CustomizedDateValue>({
-    id: '1',
-    value: getYear(new Date()),
-  })
+  const [mainOption, setMainOption] = useState<MainChoiceIndexes>(
+    MainChoicesToIndexesMap.CURRENT_YEAR,
+  )
+  const [currentCriteria, setCurrentCriteria] = useState<DateSelection>(
+    getDefaultCrtieriaValueFactory(MainChoicesToIndexesMap.CURRENT_YEAR)(),
+  )
 
+  // Reset Current Criteria Based on Selected Main Option (Current Year, Previous Year, Select Year, Select Period)
   function resetCurrentCriteriaBasedOnSelectedMainOption(selectedOption: MainChoiceIndexes) {
-    const generatePayload = defaultCrtieriaValuesFactory(selectedOption)
+    const generatePayload = getDefaultCrtieriaValueFactory(selectedOption)
     const payload = generatePayload()
-    setCurrentCriteria(payload as CustomizedDateValue)
+    setCurrentCriteria(payload)
   }
 
-  function handleChangeMainOption(event: ChangeEvent<HTMLSelectElement>) {
-    const selectedOption = event.target.value as MainChoiceIndexes
-    setMainOption(selectedOption)
-    resetCurrentCriteriaBasedOnSelectedMainOption(selectedOption)
+  // Handle Main Option Change Event (Current Year, Previous Year, Select Year, Select Period)
+  function handleChangeMainOption(selectedOption: StringValuedKey) {
+    const currentOption = selectedOption.key as MainChoiceIndexes
+    setMainOption(currentOption)
+    resetCurrentCriteriaBasedOnSelectedMainOption(currentOption)
   }
 
-  function generateLastTenYearsOptions() {
-    const currentYear = getYear(new Date())
-    const yearOptions = DateUtils.generateYearRangeOptions(currentYear, 10)
-    yearOptions.unshift({ key: '', value: 'Year' })
-    return yearOptions
-  }
+  function generateYearRangeOptions(startingYear: number, numberOfYears: number) {
+    return Array.from({ length: numberOfYears }, (_, index) => {
+      const currentYear = startingYear - index
+      const yearLabel = currentYear.toString()
 
-  // Handle Select Year Option
-  function handleChangeSelectYearOption(event: ChangeEvent<HTMLSelectElement>) {
-    const selectedOption = event.target.value
-    setCurrentCriteria({
-      id: '3',
-      value: DateUtils.getSelectedYearOrDefault(selectedOption),
+      return {
+        key: yearLabel,
+        value: yearLabel,
+      }
     })
   }
 
-  // Handle Select Period Option (From and To)
-  function handleChangePeriod(event: ChangeEvent<HTMLSelectElement>, meta: PeriodSpecification) {
-    const { field, label } = meta
-    const value = dateValueExtractorsMap[field](event.target.value)
-
-    if (label === 'from') {
-      setCurrentCriteria((prevCriteria) => ({
-        id: '4',
-        value: {
-          from: {
-            ...(prevCriteria.value as DateSelection).from,
-            [field]: value,
-          },
-          to: {
-            ...(prevCriteria.value as DateSelection).to,
-          },
-        },
-      }))
-    }
-
-    if (label === 'to') {
-      setCurrentCriteria((prevCriteria) => ({
-        id: '4',
-        value: {
-          from: {
-            ...(prevCriteria.value as DateSelection).from,
-          },
-          to: {
-            ...(prevCriteria.value as DateSelection).to,
-            [field]: value,
-          },
-        },
-      }))
-    }
+  // Generate Last Ten Years Options for Select Year Option (Main Option)
+  function generateLastTenYearsOptions() {
+    const currentYear = DateUtils.getCurrentYear()
+    const yearOptions = generateYearRangeOptions(currentYear, 10)
+    yearOptions.unshift({ key: DEFAULT_YEAR, value: DEFAULT_YEAR })
+    return yearOptions
   }
 
+  function generateMonthOptions() {
+    const monthOptions = DateUtils.generateMonths()
+    monthOptions.unshift({ key: DEFAULT_MONTH, value: DEFAULT_MONTH })
+    return monthOptions
+  }
+
+  // This function is responsible for handling the default values for the month and year if the user selects the default option
+  function handleDefaultMonthYearSelection(selectedOption: StringValuedKey) {
+    const key = selectedOption.key.toLocaleLowerCase()
+    const extractDateUnitFieldFunction = defaultDateValueExtractorsMap[key as DateUnitField]
+    return !extractDateUnitFieldFunction ? Number(key) : extractDateUnitFieldFunction()
+  }
+
+  // Handle Select Year Option (Main Option) Change Event (From and To)
+  function handleChangeSelectYearOption(selectedOption: StringValuedKey) {
+    const key = handleDefaultMonthYearSelection(selectedOption)
+
+    const payload = {
+      from: {
+        month: 1,
+        year: key,
+      },
+      to: {
+        month: 12,
+        year: key,
+      },
+    }
+
+    setCurrentCriteria(payload)
+  }
+
+  // Handle Select Period Option (From and To)
+  function handleChangePeriod(selectedOption: StringValuedKey, meta: PeriodSpecification) {
+    const { field, label } = meta
+    const key = handleDefaultMonthYearSelection(selectedOption)
+
+    const generateDateSelectionUpdate = ({ from, to }: DateSelection) => {
+      const updatedFrom = label === 'from' ? { ...from, [field]: key } : { ...from }
+      const updatedTo = label === 'to' ? { ...to, [field]: key } : { ...to }
+      const payload = { from: updatedFrom, to: updatedTo }
+
+      return payload
+    }
+
+    setCurrentCriteria(generateDateSelectionUpdate)
+  }
+
+  // Render Component Based on Selected Main Option (Current Year, Previous Year, Select Year, Select Period)
   function renderComponentBasedOnSelectedMainOption() {
     if (mainOption === MainChoicesToIndexesMap.SELECT_YEAR) {
       return (
-        <Select options={generateLastTenYearsOptions()} onChange={handleChangeSelectYearOption} />
+        <SelectComponent
+          options={generateLastTenYearsOptions()}
+          onChange={handleChangeSelectYearOption}
+        />
       )
     }
 
@@ -165,7 +164,7 @@ const App: FC = () => {
           <YearMonthSelector<DateUnitField>
             label='From'
             yearOptions={generateLastTenYearsOptions()}
-            monthOptions={monthOptions}
+            monthOptions={generateMonthOptions()}
             onChange={(e, field) => handleChangePeriod(e, { field, label: 'from' })}
             selectors={['year', 'month']}
           />
@@ -173,7 +172,7 @@ const App: FC = () => {
           <YearMonthSelector<DateUnitField>
             label='To'
             yearOptions={generateLastTenYearsOptions()}
-            monthOptions={monthOptions}
+            monthOptions={generateMonthOptions()}
             onChange={(e, field) => handleChangePeriod(e, { field, label: 'to' })}
             selectors={['year', 'month']}
           />
@@ -192,7 +191,7 @@ const App: FC = () => {
       {JSON.stringify(currentCriteria)}
       <br />
       {/* Main Option */}
-      <Select options={mainSelectOptions} onChange={handleChangeMainOption} />
+      <SelectComponent options={mainSelectOptions} onChange={handleChangeMainOption} />
       {renderComponentBasedOnSelectedMainOption()}
     </>
   )
