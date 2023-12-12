@@ -1,5 +1,13 @@
 import { getMonth, getYear } from 'date-fns'
-import { StringValuedKey } from '../types'
+import type { StringValuedKey } from 'src/types'
+
+function getCurrentYear(): number {
+  return getYear(new Date())
+}
+
+function getCurrentMonth(): number {
+  return getMonth(new Date()) + 1
+}
 
 function generateMonths() {
   const monthOptions: Array<StringValuedKey> = [
@@ -56,18 +64,10 @@ function generateMonths() {
   return monthOptions
 }
 
-function getCurrentYear(): number {
-  return getYear(new Date())
-}
-
-function getCurrentMonth(): number {
-  return getMonth(new Date()) + 1
-}
-
 const DateUtils = {
-  generateMonths,
   getCurrentYear,
   getCurrentMonth,
+  generateMonths,
 }
 
 export default DateUtils

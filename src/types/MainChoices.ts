@@ -1,0 +1,1 @@
+export type MainChoices = 'CURRENT_YEAR' | 'PREVIOUS_YEAR' | 'SELECT_YEAR' | 'SELECT_PERIOD'

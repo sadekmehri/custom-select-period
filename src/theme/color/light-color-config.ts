@@ -41,10 +41,6 @@ const LightColorsConfig = {
     hover: '#A8937D',
     selected: '#6D4141',
   },
-  tableHeader: {
-    background: 'red',
-    text: '#FFFFFF',
-  },
 }
 
 export type LightColorsConfigType = typeof LightColorsConfig

@@ -1,6 +1,5 @@
 import { amber, deepPurple } from '@mui/material/colors'
-import { CustomPaletteOptions } from 'src/types'
-import LightColorsConfig from '../color/light-color-config'
+import { CustomPaletteOptions } from '../types'
 
 const lightPalette: CustomPaletteOptions = {
   mode: 'light',
@@ -11,12 +10,8 @@ const lightPalette: CustomPaletteOptions = {
     paper: deepPurple[900],
   },
   text: {
-    primary: 'black',
-    secondary: 'white',
-  },
-  tableHeader: {
-    color: LightColorsConfig.tableHeader.text,
-    backgroundColor: LightColorsConfig.tableHeader.background,
+    primary: '#000',
+    secondary: '#000',
   },
 }
 
