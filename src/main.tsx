@@ -5,13 +5,16 @@ import './index.css'
 import { useThemeContext } from './theme/ThemeContextProvider.tsx'
 import { CustomTheme } from './theme/types/index.ts'
 import { ThemeProvider } from '@mui/material'
+import SwiperComponent from './components/Swiper/index.tsx'
+import CustomSelectOption from './components/CustomSelectOption/CustomSelectOption.tsx'
 
 const Main: FC = () => {
   const { theme } = useThemeContext()
-
   return (
     <ThemeProvider<CustomTheme> theme={theme}>
       <App />
+      <CustomSelectOption />
+      {/* <SwiperComponent /> */}
     </ThemeProvider>
   )
 }

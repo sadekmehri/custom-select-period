@@ -1,6 +1,5 @@
 import { PaletteMode, PaletteOptions, Theme } from '@mui/material'
 import { CSSProperties, TypographyOptions } from '@mui/material/styles/createTypography'
-import { DarkColorsConfigType } from '../color/dark-color-config'
 
 /**
  *  Ressources:
@@ -9,15 +8,8 @@ import { DarkColorsConfigType } from '../color/dark-color-config'
  * */
 type Modify<T, R> = Omit<T, keyof R> & R
 
-export type CustomTypographyOptions = Modify<
-  TypographyOptions,
-  { customTypographyOption: CSSProperties }
->
-
-export type CustomPaletteOptions = Modify<
-  PaletteOptions,
-  { tableHeader: DarkColorsConfigType['tableHeader'] }
->
+export type CustomTypographyOptions = Modify<TypographyOptions, {}>
+export type CustomPaletteOptions = Modify<PaletteOptions, {}>
 
 export type CustomTheme = Modify<
   Theme,

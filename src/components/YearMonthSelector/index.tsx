@@ -1,5 +1,5 @@
-import type { StringValuedKey } from './types'
-import SelectComponent from './Select'
+import type { StringValuedKey } from 'src/types'
+import SelectComponent from '../CustomSelect'
 
 type YearMonthSelectorProps<T> = {
   label: string

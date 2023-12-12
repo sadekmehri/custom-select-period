@@ -1,5 +1,5 @@
-import { CustomTypographyOptions } from 'src/types'
 import { GlobalFonts } from '../font/global-font'
+import { CustomTypographyOptions } from '../types'
 
 const mainTypography: CustomTypographyOptions = {
   fontFamily: GlobalFonts.FONT_PRIMARY,
@@ -68,17 +68,6 @@ const mainTypography: CustomTypographyOptions = {
   button: {
     fontSize: '1rem',
     fontFamily: GlobalFonts.FONT_PRIMARY,
-    fontWeight: 400,
-    textTransform: 'none',
-    '&:first-letter': {
-      textTransform: 'Uppercase',
-    },
-  },
-  customTypographyOption: {
-    fontFamily: GlobalFonts.FONT_PRIMARY,
-    fontSize: '1rem',
-    backgroundColor: 'gold',
-    color: 'red',
     fontWeight: 400,
     textTransform: 'none',
     '&:first-letter': {

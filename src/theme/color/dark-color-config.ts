@@ -41,10 +41,6 @@ const DarkColorsConfig = {
     hover: '#A8937D',
     selected: '#6D4141',
   },
-  tableHeader: {
-    background: 'blue',
-    text: '#FFFFFF',
-  },
 }
 
 export type DarkColorsConfigType = typeof DarkColorsConfig

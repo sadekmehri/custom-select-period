@@ -8,6 +8,7 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "esModuleInterop": true,
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -16,9 +17,23 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+
+    "baseUrl": "./",
+    "paths": {
+      "__mocks__/*": ["./__mocks__/*"], 
+      "src/*": [ "./src/*"],
+      "src/types/*": [ "./src/types/*" ],
+      "src/components/*": [ "./src/components/*" ],
+      "src/hooks/*": [ "./src/hooks/*" ],
+      "src/utils/*": [ "./src/utils/*" ],
+      "src/theme/*": [ "./src/theme/*" ],
+      "src/constants/*": [ "./src/constants/*" ],
+      "src/assets/*": [ "./src/assets/*" ],
+    },
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

@@ -1,6 +1,5 @@
 import { deepOrange } from '@mui/material/colors'
-import { CustomPaletteOptions } from 'src/types'
-import DarkColorsConfig from '../color/dark-color-config'
+import { CustomPaletteOptions } from '../types'
 
 const darkPalette: CustomPaletteOptions = {
   mode: 'dark',
@@ -11,12 +10,8 @@ const darkPalette: CustomPaletteOptions = {
     paper: deepOrange[900],
   },
   text: {
-    primary: 'white',
-    secondary: 'black',
-  },
-  tableHeader: {
-    color: DarkColorsConfig.tableHeader.text,
-    backgroundColor: DarkColorsConfig.tableHeader.background,
+    primary: '#000',
+    secondary: '#000',
   },
 }
 

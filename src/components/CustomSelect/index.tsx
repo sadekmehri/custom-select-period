@@ -1,14 +1,14 @@
 import { useState, type FC } from 'react'
-import { StringValuedKey } from './types'
 import Select, { type SelectChangeEvent } from '@mui/material/Select'
 import { MenuItem } from '@mui/material'
+import type { StringValuedKey } from 'src/types'
 
-type SelectProps = {
+type SelectComponentProps = {
   options: Array<StringValuedKey>
   onChange: (selectedOption: StringValuedKey) => void
 }
 
-const SelectComponent: FC<SelectProps> = ({ options, onChange }) => {
+const SelectComponent: FC<SelectComponentProps> = ({ options, onChange }) => {
   const [currentOption, setCurrentOption] = useState<StringValuedKey>(options[0])
 
   const handleChange = (event: SelectChangeEvent<string>) => {
@@ -22,7 +22,11 @@ const SelectComponent: FC<SelectProps> = ({ options, onChange }) => {
   }
 
   return (
-    <Select<string> onChange={handleChange} value={currentOption.key}>
+    <Select<string>
+      onChange={handleChange}
+      inputProps={{ 'data-testid': 'custom-select-id' }}
+      value={currentOption.key}
+    >
       {options.map((option) => (
         <MenuItem value={option.key} key={option.key}>
           {option.value}
