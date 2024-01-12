@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react'
+import { useEffect, type FC } from 'react'
 import SearchInput from './components/SearchInput'
 import { DateSelection } from './types'
 import CurrentYearComponent from './components/DateRange/CurrentYearComponent'
@@ -10,11 +10,14 @@ import YearMonthComponent from './components/DateRange/YearMonthComponent'
 import useDebounceSearchCriteria from './hooks/useDebouncedSearchCriteria'
 import PeriodRangeFacade from './components/PeriodRangeFacade'
 import useGenericState from './hooks/useGenericState'
+import useSnack from './hooks/useSnack'
+import { Alert } from '@mui/material'
 
 const App: FC = () => {
   const initialPeriod = DateRangeUtils.getDefaultDateRangeValue()
   const { getGenericValue, handleValueChange } = useGenericState<DateSelection>(initialPeriod)
   const { getDebounceSearchCriteria, handleSearch, getSearchCriteria } = useDebounceSearchCriteria()
+  const { SnackbarComponent, onDismissSnackBar, onOpenSnackBar } = useSnack()
 
   return (
     <>
@@ -43,6 +46,14 @@ const App: FC = () => {
         }}
       />
       <br />
+      <button onClick={onOpenSnackBar}>Open Snack</button>
+      <button onClick={onDismissSnackBar}>Dissmiss Snack</button>
+      <br />
+      <SnackbarComponent autoHideDuration={3000} onClose={onDismissSnackBar}>
+        <Alert onClose={onDismissSnackBar} severity='success'>
+          This is a success message!
+        </Alert>
+      </SnackbarComponent>
     </>
   )
 }
